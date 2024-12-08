@@ -31,7 +31,7 @@ void loop()
 {
    // find out if the button is pushed
    // or not by reading from it.
-   int sensorState = digitalRead( buttonPin );
+   int sensorState = digitalRead( sensorPin );
 
   // remember that we have wired the pushbutton to
   // ground and are using a pulldown resistor
