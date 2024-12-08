@@ -1,88 +1,49 @@
-bool doBlink = false;
-
-// We will be using D2 to control our LED
+// 移除INPUT_PULLUP，QTR-1RC需要使用特殊的timing方式读取
+int sensorPin = D3;
 int ledPin = D2;
 
-// Our button wired to D0
-int sensorPin = D3;
-
-void setup()
-{
-
-  // For input, we define the
-  // pushbutton as an input-pullup
-  // this uses an internal pullup resistor
-  // to manage consistent reads from the device
-
-  pinMode( sensorPin , INPUT_PULLUP); // sets pin as input
-
-  // We also want to use the LED
-
-  pinMode( ledPin , OUTPUT ); // sets pin as output
-	
-	// blink the LED when the setup is complete
-	blinkLED( 3, ledPin );
-  
-  Particle.subscribe( "blinkLED", handleActivateLED );
-
+void setup() {
+    pinMode(ledPin, OUTPUT);
+    Particle.subscribe("blinkLED", handleActivateLED);
+    blinkLED(3, ledPin);
 }
 
-void loop()
-{
-   // find out if the button is pushed
-   // or not by reading from it.
-   int sensorState = digitalRead( sensorPin );
+// 添加RC传感器读取函数
+unsigned long readQTR() {
+    unsigned long duration = 0;
+    
+    // 充电阶段
+    pinMode(sensorPin, OUTPUT);
+    digitalWrite(sensorPin, HIGH);
+    delayMicroseconds(10);
+    
+    // 放电并计时阶段
+    pinMode(sensorPin, INPUT);
+    while(digitalRead(sensorPin) == HIGH) {
+        duration++;
+        if(duration > 3000) break; // 超时保护
+    }
+    
+    return duration;
+}
 
-  // remember that we have wired the pushbutton to
-  // ground and are using a pulldown resistor
-  // that means, when the button is pushed,
-  // we will get a LOW signal
-  // when the button is not pushed we'll get a HIGH
-
-  // let's use that to set our LED on or off
-
-  if( sensorState == LOW )
-  {
-    // turn the LED On
-    digitalWrite( ledPin, HIGH);
-    Particle.publish( "doPairedPublish" );
-		
-  }else{
-    // otherwise
-    // turn the LED Off
-    digitalWrite( ledPin, LOW);
-
-  }
-		delay( 1000 );
-
-
-
-    if( doBlink == true ){
-        blinkLED( 6, ledPin );
+void loop() {
+    // 读取传感器值
+    unsigned long sensorValue = readQTR();
+    
+    // 设定一个阈值来判断是否检测到物体
+    // 可能需要根据实际情况调整这个阈值
+    if(sensorValue < 1000) {
+        digitalWrite(ledPin, HIGH);
+        Particle.publish("doPairedPublish");
+    } else {
+        digitalWrite(ledPin, LOW);
+    }
+    
+    delay(100); // 降低采样频率
+    
+    if(doBlink) {
+        blinkLED(6, ledPin);
         doBlink = false;
     }
-
-
 }
-
-void blinkLED( int times, int pin ){
-    
-    for( int i = 0; i < times ; i++ ){
-        digitalWrite( pin, HIGH );
-        delay( 500 );
-        digitalWrite( pin, LOW );
-        delay( 500 );
-    }
-    
-}
-
-void handleActivateLED( const char *event, const char *data)
-{
-   doBlink = true;
-}
-
-
-
-
-
-
