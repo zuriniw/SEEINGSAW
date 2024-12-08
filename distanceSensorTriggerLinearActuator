@@ -1,0 +1,92 @@
+bool doBlink = false;
+int ledPin = D2;
+int sensorPin = D3;
+// L298N control pins
+int enPin = A2;    // Enable pin for speed control
+int in1 = D6;      // Direction control 1
+int in2 = D7;      // Direction control 2
+
+void setup() {
+    pinMode(ledPin, OUTPUT);
+    pinMode(enPin, OUTPUT);
+    pinMode(in1, OUTPUT);
+    pinMode(in2, OUTPUT);
+    
+    // Initialize actuator to stopped state
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, LOW);
+    analogWrite(enPin, 0);
+    
+    blinkLED(3, ledPin);
+    Particle.subscribe("blinkLED", handleActivateLED);
+}
+
+unsigned long readQTR() {
+    unsigned long duration = 0;
+    pinMode(sensorPin, OUTPUT);
+    digitalWrite(sensorPin, HIGH);
+    delayMicroseconds(10);
+    
+    pinMode(sensorPin, INPUT);
+    while(digitalRead(sensorPin) == HIGH && duration < 3000) {
+        duration++;
+    }
+    return duration;
+}
+
+void actuatorExtend() {
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+    analogWrite(enPin, 200);  // PWM value for speed control
+}
+
+void actuatorExtract() {
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+    analogWrite(enPin, 200);  // PWM value for speed control
+}
+
+
+void actuatorStop() {
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, LOW);
+    analogWrite(enPin, 0);
+}
+
+void loop() {
+    unsigned long sensorValue = 0;
+    for(int i = 0; i < 5; i++) {
+        sensorValue += readQTR();
+        delay(1);
+    }
+    sensorValue /= 5;
+
+    if(sensorValue < 1000) {
+        digitalWrite(ledPin, HIGH);
+        actuatorExtend();
+        Particle.publish("doPairedPublish");
+    } else {
+        digitalWrite(ledPin, LOW);
+        actuatorStop();
+    }
+    
+    delay(1000);
+
+    if(doBlink == true) {
+        blinkLED(6, ledPin);
+        doBlink = false;
+    }
+}
+
+void blinkLED(int times, int pin) {
+    for(int i = 0; i < times; i++) {
+        digitalWrite(pin, HIGH);
+        delay(500);
+        digitalWrite(pin, LOW);
+        delay(500);
+    }
+}
+
+void handleActivateLED(const char *event, const char *data) {
+    doBlink = true;
+}
