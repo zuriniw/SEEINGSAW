@@ -1,3 +1,5 @@
+bool doBlink = false;
+
 // We will be using D2 to control our LED
 int ledPin = D2;
 
@@ -21,7 +23,7 @@ void setup()
 	// blink the LED when the setup is complete
 	blinkLED( 3, ledPin );
   
-  Particle.subscribe( "blinkLED", handleBlinkLED );
+  Particle.subscribe( "blinkLED", handleActivateLED );
 
 }
 
@@ -55,9 +57,9 @@ void loop()
 
 
 
-    if( doLED == true ){
+    if( doBlink == true ){
         blinkLED( 6, ledPin );
-        doLED = false;
+        doBlink = false;
     }
 
 
@@ -79,9 +81,8 @@ void handleActivateLED( const char *event, const char *data)
    doBlink = true;
 }
 
-Next, add a global variable at the top of the code to store the blink state: 
 
-````js
-bool doBlink = false;
+
+
 
 
