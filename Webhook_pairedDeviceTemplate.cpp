@@ -4,7 +4,7 @@ bool doBlink = false;
 int ledPin = D2;
 
 // Our button wired to D0
-int buttonPin = D3;
+int sensorPin = D3;
 
 void setup()
 {
@@ -14,7 +14,7 @@ void setup()
   // this uses an internal pullup resistor
   // to manage consistent reads from the device
 
-  pinMode( buttonPin , INPUT_PULLUP); // sets pin as input
+  pinMode( sensorPin , INPUT_PULLUP); // sets pin as input
 
   // We also want to use the LED
 
@@ -31,7 +31,7 @@ void loop()
 {
    // find out if the button is pushed
    // or not by reading from it.
-   int buttonState = digitalRead( buttonPin );
+   int sensorState = digitalRead( buttonPin );
 
   // remember that we have wired the pushbutton to
   // ground and are using a pulldown resistor
@@ -41,7 +41,7 @@ void loop()
 
   // let's use that to set our LED on or off
 
-  if( buttonState == LOW )
+  if( sensorState == LOW )
   {
     // turn the LED On
     digitalWrite( ledPin, HIGH);
