@@ -15,10 +15,11 @@ void setup() {
     // Initialize actuator to stopped state
     digitalWrite(in1, LOW);
     digitalWrite(in2, LOW);
-    analogWrite(enPin, 0);
+    digitalWrite(enPin, HIGH);
     
     blinkLED(3, ledPin);
     Particle.subscribe("blinkLED", handleActivateLED);
+
 }
 
 unsigned long readQTR() {
@@ -37,13 +38,13 @@ unsigned long readQTR() {
 void actuatorExtend() {
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
-    analogWrite(enPin, 200);  // PWM value for speed control
+    //analogWrite(enPin, 200);  // PWM value for speed control
 }
 
 void actuatorExtract() {
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH);
-    analogWrite(enPin, 200);  // PWM value for speed control
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    //analogWrite(enPin, 200);  // PWM value for speed control
 }
 
 
