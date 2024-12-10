@@ -1,145 +1,95 @@
-///////////////////////////////////////////////////////////////////////////////
-//  PAIRED DEVICE --> ziru's end (device 1)
-///////////////////////////////////////////////////////////////////////////////
-bool isBlueOn = false;
-bool isObjectIn_1 = false;
-bool isObjectIn_2 = false;
+#include "Particle.h"
 
-int ledPin = D2;                // led(RED) is the indicator of both-sides state, aligned with actuator position state
-int yellowPin = D0;              // YELLOW LED is the indicator of self-sides state
-int bluePin = D1;                // BLUE LED is the indicator of other-sides state
+// Button pin definitions
+int button_mid = S3;            
+int button_re = SCK;             
+int button_ex = MOSI;             
+int ledpin = D2;
 
-int sensorPin = D3;
+// L298N Motor Driver control pins
+int enPin = A2;    
+int in1 = D6;      
+int in2 = D7;      
 
-// L298N control pins
-int enPin = A2;    // Enable pin for speed control
-int in1 = D6;      // Direction control 1
-int in2 = D7;      // Direction control 2
+// Actuator properties
+const int totalLength = 50;  // mm
+const int speed = 40;  // mm/s
+const int midPositionTimeMs = (totalLength * 1000) / (2 * speed); 
 
-///////////////////////////////////////////////////////////////////////////////
+// Position tracking
+int currentPosition = 0;  // 0 = fully retracted, 50 = fully extended
+bool isMoving = false;
+
 void setup() {
-    pinMode(ledPin, OUTPUT);
     pinMode(enPin, OUTPUT);
     pinMode(in1, OUTPUT);
     pinMode(in2, OUTPUT);
     
-    pinMode(yellowPin, OUTPUT);
-    pinMode(bluePin, OUTPUT);
+    pinMode(button_mid, INPUT_PULLUP);
+    pinMode(button_re, INPUT_PULLUP);
+    pinMode(button_ex, INPUT_PULLUP);
     
-    // Initialize actuator to stopped state
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, LOW);
-    digitalWrite(enPin, HIGH);
-    
-    digitalWrite(bluePin, LOW);
-    
-    blinkLED(3, ledPin);
-    Particle.subscribe("doBlue_2", handleLED);
+    blinkLED(2, ledpin);
+
+    // Initialize to retracted position
+    actuatorRetract();
+    delay(2000);
+    currentPosition = 0;  // Set initial position
+
+    // Move to mid position
+    moveToPosition(totalLength/2);  // Move to 25mm
 }
 
-////////////////////////////////////////////////////////////////////////////////
 void loop() {
-    unsigned long sensorValue = 0;
-    for(int i = 0; i < 5; i++) {
-        sensorValue += readQTR();
-        delay(1);
+    if (digitalRead(button_mid) == LOW && !isMoving) {
+        moveToPosition(totalLength/2);  // Move to 25mm
+    } 
+    else if (digitalRead(button_re) == LOW && !isMoving) {
+        moveToPosition(0);  // Fully retract
     }
-    sensorValue /= 5;
+    else if (digitalRead(button_ex) == LOW && !isMoving) {
+        moveToPosition(totalLength);  // Fully extend
+    }
+}
 
-    if(sensorValue < 3000) {
-        // object presence in 1
-        digitalWrite(yellowPin, HIGH);
-        
-        Particle.publish("doBlue_1", "1");// broadcast the state of 1
-        isObjectIn_1 = true;             // set the state of 1 itself, according to the sensor
-        
+void moveToPosition(int targetPosition) {
+    if (targetPosition == currentPosition) return;
+    
+    isMoving = true;
+    int distanceToMove = abs(targetPosition - currentPosition);
+    int moveTime = (distanceToMove * 1000) / speed;
+    
+    if (targetPosition > currentPosition) {
+        actuatorExtend();
     } else {
-        // no object in 1
-        digitalWrite(yellowPin, LOW);
-        
-        Particle.publish("doBlue_1", "0");// broadcast the state of 1
-        isObjectIn_1 = false;             // set the state of 1 itself, according to the sensor
-        
-    }
-    //Serial.println("111");
-    
-    delay(1000);
-    
-    // go to mid 
-    if (isObjectIn_1 == isObjectIn_2) {
-        blinkLED(1, ledPin);
+        actuatorRetract();
     }
     
-    // retract --> the end sink
-    if (isObjectIn_1 == true and isObjectIn_2 == false) {
-        blinkLED(3, ledPin);
-    }
-
-    // extend --> the end lift
-    if (isObjectIn_1 == false and isObjectIn_2 == true) {
-        blinkLED(6, ledPin);
-    }
-}
-////////////////////////////////////////////////////////////////////////////////
-void setBlueOn() {
-    digitalWrite(bluePin, HIGH);
-    Serial.println("high");
-}
-
-void setBlueOff() {
-    digitalWrite(bluePin, LOW);
-    Serial.println("low");
-}
-
-void handleLED(const char *event, const char *data) {
-    Serial.println(*data);
-    if ( *data=='1'){
-        setBlueOn();
-        //Serial.println("got 0");
-        isObjectIn_2 = true;
-    }
-    if (*data=='0'){
-        setBlueOff();
-        //Serial.println("got 1");
-        isObjectIn_2 = false;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-unsigned long readQTR() {
-    unsigned long duration = 0;
-    pinMode(sensorPin, OUTPUT);
-    digitalWrite(sensorPin, HIGH);
-    delayMicroseconds(10);
+    delay(moveTime);
+    actuatorStop();
     
-    pinMode(sensorPin, INPUT);
-    while(digitalRead(sensorPin) == HIGH && duration < 3000) {
-        duration++;
-    }
-    return duration;
+    currentPosition = targetPosition;
+    isMoving = false;
 }
+
 
 void actuatorExtend() {
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
-    // Optionally control speed with PWM
-    analogWrite(enPin, 200);  // PWM value for speed control
+    analogWrite(enPin, 200);  // Use PWM for speed control
 }
 
 void actuatorRetract() {
     digitalWrite(in1, LOW);
     digitalWrite(in2, HIGH);
-    // Optionally control speed with PWM
-    analogWrite(enPin, 200);  // PWM value for speed control
+    analogWrite(enPin, 200);  // Use PWM for speed control
 }
 
 void actuatorStop() {
     digitalWrite(in1, LOW);
     digitalWrite(in2, LOW);
-    analogWrite(enPin, 0);
+    analogWrite(enPin, 0);  // Stop the motor
 }
-
 
 void blinkLED(int times, int pin) {
     for(int i = 0; i < times; i++) {
@@ -149,4 +99,3 @@ void blinkLED(int times, int pin) {
         delay(100);
     }
 }
-////////////////////////////////////////////////////////////////////////////////
