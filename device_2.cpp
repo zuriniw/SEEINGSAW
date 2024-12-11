@@ -7,9 +7,9 @@ bool isObjectIn_2 = false;
 bool last_isObjectIn_2 = false;
 
 // Button pin definitions
-int button_mid = S3;            
-int button_re = SCK;             
-int button_ex = MOSI;   
+// int button_mid = S3;            
+// int button_re = SCK;             
+// int button_ex = MOSI;   
 
 int ledPin = D2;                // led(RED) is the indicator of both-sides state, aligned with actuator position state
 int yellowPin = D0;             // YELLOW LED is the indicator of self-sides state
@@ -23,8 +23,8 @@ int in1 = D6;      // Direction control 1
 int in2 = D7;      // Direction control 2
 
 // Actuator properties
-const int totalLength = 50;  // mm
-const int speed = 40;  // mm/s
+const int totalLength = 60;  // mm, 60 for 5v, 50 for 12v
+const int speed = 20;  // mm/s, 20 for 5v, 40 for 12v
 const int midPositionTimeMs = (totalLength * 1000) / (2 * speed); 
 
 // Position tracking
@@ -52,7 +52,7 @@ void setup() {
     
     digitalWrite(bluePin, LOW);
     
-    blinkLED(3, ledPin);
+    blinkLED(3, ledPin, 100);
     Particle.subscribe("doBlue_1", handleLED);
 
     // Initialize to retracted position
@@ -70,7 +70,7 @@ void loop() {
     unsigned long sensorValue = 0;
     for(int i = 0; i < 5; i++) {
         sensorValue += readQTR();
-        delay(1);
+        delay(1); 
     }
     sensorValue /= 5;
 
@@ -88,7 +88,7 @@ void loop() {
     unsigned long lastPublishTime = 0;  // 记录上次发布时间
     const unsigned long PUBLISH_INTERVAL = 1000;  // 发布间隔为1秒
     
-    if (isObjectIn_1 != last_isObjectIn_1) {
+    if (isObjectIn_2 != last_isObjectIn_2) {
         unsigned long currentTime = millis();
         
         if (currentTime - lastPublishTime >= PUBLISH_INTERVAL) {
@@ -105,33 +105,33 @@ void loop() {
 
     // go to mid 
     if (isObjectIn_1 == isObjectIn_2) {
-        blinkLED(1, ledPin);
+        //blinkLED(1, ledPin, 1000);
         moveToPosition(totalLength/2);
     }
     
     // retract --> the end sink
     if (isObjectIn_1 == false and isObjectIn_2 == true) {
-        blinkLED(3, ledPin);
+        //blinkLED(1, ledPin, 200);
         moveToPosition(totalLength); 
     }
 
     // extend --> the end lift
     if (isObjectIn_1 == true and isObjectIn_2 == false) {
-        blinkLED(6, ledPin);
+        //blinkLED(1, ledPin, 2000);
         moveToPosition(0);
     }
     
-    ////  button control  ////
+    ////  button control: for testing linear actuator movement  ////
     
-    if (digitalRead(button_mid) == LOW && !isMoving) {
-        moveToPosition(totalLength/2);  // Move to 25mm
-    } 
-    else if (digitalRead(button_re) == LOW && !isMoving) {
-        moveToPosition(0);  // Fully retract
-    }
-    else if (digitalRead(button_ex) == LOW && !isMoving) {
-        moveToPosition(totalLength);  // Fully extend
-    }
+    // if (digitalRead(button_mid) == LOW && !isMoving) {
+    //     moveToPosition(totalLength/2);  // Move to 25mm
+    // } 
+    // else if (digitalRead(button_re) == LOW && !isMoving) {
+    //     moveToPosition(0);  // Fully retract
+    // }
+    // else if (digitalRead(button_ex) == LOW && !isMoving) {
+    //     moveToPosition(totalLength);  // Fully extend
+    // }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -209,12 +209,12 @@ void actuatorStop() {
 }
 
 
-void blinkLED(int times, int pin) {
+void blinkLED(int times, int pin, int interval) {
     for(int i = 0; i < times; i++) {
         digitalWrite(pin, HIGH);
-        delay(100);
+        delay(interval);
         digitalWrite(pin, LOW);
-        delay(100);
+        delay(interval);
     }
 }
 ////////////////////////////////////////////////////////////////////////////////
