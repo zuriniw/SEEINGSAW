@@ -1,4 +1,5 @@
-# PairedDevice
+# Remote See-saw
+![](https://pic.superbed.cc/item/675a0762fa9f77b4dc1a8ac9.png)
 
 ## To run the code
 - Open the `Seesaw` file; this is all you need to get started.
