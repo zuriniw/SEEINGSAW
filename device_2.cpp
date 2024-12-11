@@ -41,9 +41,9 @@ void setup() {
     pinMode(yellowPin, OUTPUT);
     pinMode(bluePin, OUTPUT);
 
-    pinMode(button_mid, INPUT_PULLUP);
-    pinMode(button_re, INPUT_PULLUP);
-    pinMode(button_ex, INPUT_PULLUP);
+    // pinMode(button_mid, INPUT_PULLUP);
+    // pinMode(button_re, INPUT_PULLUP);
+    // pinMode(button_ex, INPUT_PULLUP);
     
     // Initialize actuator to stopped state
     digitalWrite(in1, LOW);
