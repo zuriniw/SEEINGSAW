@@ -36,6 +36,17 @@
 ## Our Project
 [Under Construction 🏗]
 
+we plan to try a new framework for our paired device, mimicking the motion of two objects under physical laws to make the events on the other end more evident. Everyone has an intuitive understanding of gravity: for example, when using a scale, we can easily understand why one side sinks and the other rises; or when pulling a blinds cord, the cord descends while the blinds rise. These movements indicate that a force is at work within the physical mechanical system, which we can use to reflect the presence of the other device in our paired device system.
+
+The "remote see-saw" concept may evoke memories of your childhood, playing on the seesaws with friends at the playground. This up-and-down interaction is quite fun.
+
+We all know that a seesaw is a lever; when one side is heavier, that end will sink, and the opposite side will rise. If neither side is occupied or if the weights are equal, both ends will remain level.
+
+***But what if two people are not in the same location? Can they still play on a seesaw together? How can they interact with a seesaw to feel each other's presence?***
+
+Here is our strategy: We use a distance sensor to detect the presence of objects, then transmit variables through the Particle platform, and finally, adjust the movement of the linear actuators on both sides based on the status of objects on each side. In this system, the movement of the seesaw is no longer driven by gravity, but you can still play with it with a friend who is miles away.
+
+
 ### System Logic
 ![](https://pic.superbed.cc/item/675a3099fa9f77b4dc1be809.png)
 
@@ -45,6 +56,7 @@
 - 🔵 Blue LED: remote device's object detection
 
 **Movement Logic**
+
 This section simulates the movement of an object on a seesaw using linear actuators, following gravity principles.
 - ● ● /  ○ ○ —> Both sides same state: Move to middle position (totalLength/2)
 - ● ○             —> Object in Device 1 only: Device 1 extends, Device 2 retracts
@@ -57,6 +69,7 @@ This section simulates the movement of an object on a seesaw using linear actuat
 - Each device updates state based on partner events
 
 **Actuator Control**
+
 Linear actuators can control direction, speed, and timing, but we aim to use them to achieve different positions in three modes to simulate seesaw movement. Here is our strategies:
 - Position tracking using time-based calculations and movement calculations based on speed
 - Movement functions: extend, retract, stop, and moveToPosition(int targetPosition)
