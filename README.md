@@ -1,5 +1,5 @@
 # Remote See-saw
-![](https://pic.superbed.cc/item/675a0762fa9f77b4dc1a8ac9.png)
+![](https://pic.superbed.cc/item/675bd434fa9f77b4dc46555e.png)
 
 ## To Run the Code
 - Open the `Seesaw` file; this is all you need to get started.
@@ -36,7 +36,7 @@
 ## Our Project
 [Under Construction 🏗]
 
-we plan to try a new framework for our paired device, mimicking the motion of two objects under physical laws to make the events on the other end more evident. Everyone has an intuitive understanding of gravity: for example, when using a scale, we can easily understand why one side sinks and the other rises; or when pulling a blinds cord, the cord descends while the blinds rise. These movements indicate that a force is at work within the physical mechanical system, which we can use to reflect the presence of the other device in our paired device system.
+We plan to try a new framework for our paired device, mimicking the motion of two objects under physical laws to make the events on the other end more evident. Everyone has an intuitive understanding of gravity: for example, when using a scale, we can easily understand why one side sinks and the other rises; or when pulling a blinds cord, the cord descends while the blinds rise. These movements indicate that a force is at work within the physical mechanical system, which we can use to reflect the presence of the other device in our paired device system.
 
 The "remote see-saw" concept may evoke memories of your childhood, playing on the seesaws with friends at the playground. This up-and-down interaction is quite fun.
 
