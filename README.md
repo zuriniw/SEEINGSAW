@@ -1,5 +1,5 @@
 # [SEEING-SAW]
-![](https://pic.superbed.cc/item/675bd434fa9f77b4dc46555e.png)
+![](https://pic.superbed.cc/item/675fcfcbfa9f77b4dc80ee73.png)
 
 ## To Run the Code
 - Open the `Seesaw` file; this is all you need to get started.
@@ -17,7 +17,7 @@
 | 7    | Power Supply 12V                          | 1        | For linear actuator and L298N motor driver                     |
 
 - Wire them as shown below:
-    - ![](https://pic.superbed.cc/item/675a160ffa9f77b4dc1b0713.png)
+    - ![](https://pic.superbed.cc/item/675fcf5dfa9f77b4dc80e7d1.png)
     - Pin Setup
         - LED indicators:
             - Red (D2)
