@@ -1,5 +1,3 @@
-//这段代码能实现按按钮，linear actuator回缩，但是当sensor detect到物体时，只有led亮，lineat actuator不工作
-
 bool doBlink = false;
 int ledPin = D2;
 int sensorPin = D3;

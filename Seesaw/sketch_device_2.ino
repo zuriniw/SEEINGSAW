@@ -1,5 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
-//  PAIRED DEVICE --> leslie's end (device 2)
+//  PAIRED DEVICE --> LL's end (device 2): 
+There are some unknown issues with LL's photon 2 that lead to the disconnection when powered the linear actuator with 12v power supply. 
+So I adjust the preset speed and total length in the file `device_2` to make the position reaching correct.
 ///////////////////////////////////////////////////////////////////////////////
 bool isBlueOn = false;
 bool isObjectIn_1 = false;
